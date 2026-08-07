@@ -51,9 +51,22 @@ Waiting for scan...
 function onScanSuccess(decodedText){
 
     document.getElementById("result").innerHTML =
-    "QR Detected: " + decodedText;
+    "Scanning...";
 
-    // We'll connect this to Apps Script in the next step.
+    fetch("https://script.google.com/macros/s/AKfycbxk-aX6MmYty1x19roVee3vRf5v7YQWdpSH4CJjI7dtZ5_UMpcrMW5HuhEtJhSqe8gx/exec?code=" + encodeURIComponent(decodedText))
+    .then(response => response.text())
+    .then(result => {
+
+        document.getElementById("result").innerHTML = result;
+
+    })
+    .catch(error => {
+
+        document.getElementById("result").innerHTML =
+        "Error: " + error;
+
+    });
+
 }
 
 const html5QrCode = new Html5Qrcode("reader");
