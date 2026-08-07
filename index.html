@@ -26,9 +26,10 @@
     }
 
     #result{
-      margin-top:20px;
-      font-size:18px;
-      font-weight:bold;
+    margin-top:20px;
+    font-size:24px;
+    font-weight:bold;
+}
     }
   </style>
 
@@ -50,6 +51,12 @@ Waiting for scan...
 
   let scanLock = false;
 
+if(scanLock){
+    return;
+}
+
+scanLock = true;
+  
 function onScanSuccess(decodedText){
 
   if(scanLock){
@@ -81,6 +88,20 @@ scanLock = true;
     document.getElementById("result").innerHTML =
     "Code: " + employeeCode +
     "<br>Server: " + result;
+
+
+    // Pause scanning for 10 seconds
+    setTimeout(function(){
+
+        scanLock = false;
+
+        document.getElementById("result").innerHTML =
+        "Ready for next scan";
+
+    },10000);
+
+
+})
 
     setTimeout(function(){
 
