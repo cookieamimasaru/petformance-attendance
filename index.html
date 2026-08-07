@@ -1,44 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>QR Camera Test</title>
+
+  <title>Petformance Attendance Scanner</title>
+
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f5f5f5;
+      margin: 20px;
+    }
+
+    h2 {
+      color: #1565c0;
+    }
+
+    #reader {
+      width: 320px;
+      margin: auto;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+  </style>
+
 </head>
 
 <body>
 
-<h2>Petformance QR Test</h2>
+  <h2>Petformance Veterinary</h2>
 
-<div id="reader" style="width:320px;"></div>
+  <h3>Attendance Scanner</h3>
 
-<h3 id="result">Waiting for QR...</h3>
+  <div id="reader"></div>
+
+  <p id="result">
+    Waiting for scan...
+  </p>
 
 <script>
 
-function qrFound(decodedText) {
+let scanLock = false;
+
+function onScanSuccess(decodedText) {
+
+  if (scanLock) {
+    return;
+  }
+
+  scanLock = true;
 
   document.getElementById("result").innerHTML =
     "QR FOUND:<br>" + decodedText;
 
-  let employeeCode = decodedText;
+  let employeeCode = "";
 
-  // Get employee code from QR URL
-  if (decodedText.includes("?code=")) {
-    employeeCode = decodedText.split("?code=")[1];
+  try {
+
+    const qrUrl = new URL(decodedText);
+
+    employeeCode =
+      qrUrl.searchParams.get("code");
+
+  } catch (error) {
+
+    employeeCode =
+      decodedText.trim();
+
   }
 
-  // Remove anything after &
-  if (employeeCode.includes("&")) {
-    employeeCode = employeeCode.split("&")[0];
+  if (!employeeCode) {
+
+    document.getElementById("result").innerHTML =
+      "ERROR: No employee code found";
+
+    scanLock = false;
+
+    return;
   }
 
   document.getElementById("result").innerHTML =
     "Sending code:<br>" + employeeCode;
 
+  const appsScriptUrl =
+    "https://script.google.com/macros/s/AKfycbxk-aX6MmYty1x19roVee3vRf5v7YQWdpSH4CJjI7dtZ5_UMpcrMW5HuhEtJhSqe8gx/exec";
+
   fetch(
-    "https://script.google.com/macros/s/AKfycbxk-aX6MmYty1x19roVee3vRf5v7YQWdpSH4CJjI7dtZ5_UMpcrMW5HuhEtJhSqe8gx/exec?code="
-    + encodeURIComponent(employeeCode)
+    appsScriptUrl +
+    "?code=" +
+    encodeURIComponent(employeeCode)
   )
 
   .then(response => response.text())
@@ -46,8 +107,20 @@ function qrFound(decodedText) {
   .then(result => {
 
     document.getElementById("result").innerHTML =
-      "Employee Code: " + employeeCode +
-      "<br><br>Server:<br>" + result;
+      "Employee Code: " +
+      employeeCode +
+      "<br><br>" +
+      "Server: " +
+      result;
+
+    setTimeout(function() {
+
+      scanLock = false;
+
+      document.getElementById("result").innerHTML =
+        "Ready for next scan";
+
+    }, 10000);
 
   })
 
@@ -56,39 +129,53 @@ function qrFound(decodedText) {
     document.getElementById("result").innerHTML =
       "FETCH ERROR:<br>" + error;
 
+    setTimeout(function() {
+
+      scanLock = false;
+
+    }, 5000);
+
   });
 
 }
 
-const scanner = new Html5Qrcode("reader");
+
+const html5QrCode =
+  new Html5Qrcode("reader");
+
 
 Html5Qrcode.getCameras()
 
-.then(function(cameras) {
+.then(function(devices) {
 
-  if (cameras.length === 0) {
+  if (devices && devices.length) {
+
+    html5QrCode.start(
+
+      { facingMode: "environment" },
+
+      {
+        fps: 10,
+        qrbox: 250
+      },
+
+      onScanSuccess
+
+    );
+
+  } else {
 
     document.getElementById("result").innerHTML =
-      "NO CAMERA FOUND";
+      "No camera found.";
 
-    return;
   }
-
-  scanner.start(
-    { facingMode: "environment" },
-    {
-      fps: 10,
-      qrbox: 250
-    },
-    qrFound
-  );
 
 })
 
 .catch(function(error) {
 
   document.getElementById("result").innerHTML =
-    "CAMERA ERROR:<br>" + error;
+    "Camera Error:<br>" + error;
 
 });
 
