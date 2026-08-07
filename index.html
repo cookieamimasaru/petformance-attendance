@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Petformance Attendance Scanner</title>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    body{
+      font-family:Arial,sans-serif;
+      text-align:center;
+      background:#f5f5f5;
+      margin:20px;
+    }
+
+    h2{
+      color:#1565c0;
+    }
+
+    #reader{
+      width:320px;
+      margin:auto;
+    }
+
+    #result{
+      margin-top:20px;
+      font-size:18px;
+      font-weight:bold;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<h2>Petformance Veterinary</h2>
+
+<h3>Attendance Scanner</h3>
+
+<div id="reader"></div>
+
+<p id="result">
+Waiting for scan...
+</p>
+
+<script>
+
+function onScanSuccess(decodedText){
+
+    document.getElementById("result").innerHTML =
+    "QR Detected: " + decodedText;
+
+    // We'll connect this to Apps Script in the next step.
+}
+
+const html5QrCode = new Html5Qrcode("reader");
+
+Html5Qrcode.getCameras().then(devices=>{
+
+    if(devices.length){
+
+        html5QrCode.start(
+            {facingMode:"environment"},
+            {
+                fps:10,
+                qrbox:250
+            },
+            onScanSuccess
+        );
+
+    }else{
+
+        document.getElementById("result").innerHTML =
+        "No camera found.";
+
+    }
+
+}).catch(err=>{
+
+    document.getElementById("result").innerHTML =
+    err;
+
+});
+
+</script>
+
+</body>
+</html>
