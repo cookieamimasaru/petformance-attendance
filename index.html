@@ -63,7 +63,7 @@ function onScanSuccess(decodedText){
     document.getElementById("result").innerHTML =
 "Scanned: " + decodedText;
 
-   fetch("YOUR_URL/exec?code=" + encodeURIComponent(employeeCode))
+   fetch("https://script.google.com/macros/s/AKfycbxk-aX6MmYty1x19roVee3vRf5v7YQWdpSH4CJjI7dtZ5_UMpcrMW5HuhEtJhSqe8gx/exec=" + encodeURIComponent(employeeCode))
     .then(response => response.text())
     .then(result => {
 
