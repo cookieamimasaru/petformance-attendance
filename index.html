@@ -48,7 +48,15 @@ Waiting for scan...
 
 <script>
 
+  let scanLock = false;
+
 function onScanSuccess(decodedText){
+
+  if(scanLock){
+    return;
+}
+
+scanLock = true;
 
     let employeeCode = decodedText;
 
@@ -68,10 +76,20 @@ function onScanSuccess(decodedText){
     .then(response => response.text())
     .then(result => {
 
+  .then(result => {
+
     document.getElementById("result").innerHTML =
-    "QR Sent: " + decodedText + "<br>Server: " + result;
+    "Code: " + employeeCode +
+    "<br>Server: " + result;
+
+    setTimeout(function(){
+
+        scanLock = false;
+
+    },5000);
 
 })
+          
     .catch(error => {
 
         document.getElementById("result").innerHTML =
