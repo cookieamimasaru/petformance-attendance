@@ -21,6 +21,43 @@ function qrFound(decodedText) {
   document.getElementById("result").innerHTML =
     "QR FOUND:<br>" + decodedText;
 
+  let employeeCode = decodedText;
+
+  // Get employee code from QR URL
+  if (decodedText.includes("?code=")) {
+    employeeCode = decodedText.split("?code=")[1];
+  }
+
+  // Remove anything after &
+  if (employeeCode.includes("&")) {
+    employeeCode = employeeCode.split("&")[0];
+  }
+
+  document.getElementById("result").innerHTML =
+    "Sending code:<br>" + employeeCode;
+
+  fetch(
+    "https://script.google.com/macros/s/AKfycbxk-aX6MmYty1x19roVee3vRf5v7YQWdpSH4CJjI7dtZ5_UMpcrMW5HuhEtJhSqe8gx/exec?code="
+    + encodeURIComponent(employeeCode)
+  )
+
+  .then(response => response.text())
+
+  .then(result => {
+
+    document.getElementById("result").innerHTML =
+      "Employee Code: " + employeeCode +
+      "<br><br>Server:<br>" + result;
+
+  })
+
+  .catch(error => {
+
+    document.getElementById("result").innerHTML =
+      "FETCH ERROR:<br>" + error;
+
+  });
+
 }
 
 const scanner = new Html5Qrcode("reader");
