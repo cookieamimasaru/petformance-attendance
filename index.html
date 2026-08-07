@@ -1,153 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>Petformance Attendance Scanner</title>
-
+  <title>QR Camera Test</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #f5f5f5;
-      margin: 20px;
-    }
-
-    h2 {
-      color: #1565c0;
-    }
-
-    #reader {
-      width: 320px;
-      margin: auto;
-    }
-
-    #result {
-      margin-top: 20px;
-      font-size: 24px;
-      font-weight: bold;
-    }
-  </style>
 </head>
 
 <body>
 
-  <h2>Petformance Veterinary</h2>
-  <h3>Attendance Scanner</h3>
+<h2>Petformance QR Test</h2>
 
-  <div id="reader"></div>
+<div id="reader" style="width:320px;"></div>
 
-  <p id="result">Waiting for scan...</p>
+<h3 id="result">Waiting for QR...</h3>
 
-  <script>
+<script>
 
-    let scanLock = false;
+function qrFound(decodedText) {
 
-    function onScanSuccess(decodedText) {
+  document.getElementById("result").innerHTML =
+    "QR FOUND:<br>" + decodedText;
 
-      // Prevent repeated scans
-      if (scanLock) {
-        return;
-      }
+}
 
-      scanLock = true;
+const scanner = new Html5Qrcode("reader");
 
-      let employeeCode = decodedText;
+Html5Qrcode.getCameras()
 
-      // Extract verification code from QR URL
-      if (decodedText.includes("?code=")) {
-        employeeCode = decodedText.split("?code=")[1];
-      }
+.then(function(cameras) {
 
-      // Remove anything after &
-      if (employeeCode.includes("&")) {
-        employeeCode = employeeCode.split("&")[0];
-      }
+  if (cameras.length === 0) {
 
-      document.getElementById("result").innerHTML =
-        "Scanning Code: " + employeeCode;
+    document.getElementById("result").innerHTML =
+      "NO CAMERA FOUND";
 
-      fetch(
-        "https://script.google.com/macros/s/AKfycbxk-aX6MmYty1x19roVee3vRf5v7YQWdpSH4CJjI7dtZ5_UMpcrMW5HuhEtJhSqe8gx/exec?code="
-        + encodeURIComponent(employeeCode)
-      )
+    return;
+  }
 
-      .then(response => response.text())
+  scanner.start(
+    { facingMode: "environment" },
+    {
+      fps: 10,
+      qrbox: 250
+    },
+    qrFound
+  );
 
-      .then(result => {
+})
 
-        document.getElementById("result").innerHTML =
-          "Code: " + employeeCode +
-          "<br><br>" +
-          result;
+.catch(function(error) {
 
-        // Keep result visible for 10 seconds
-        setTimeout(function() {
+  document.getElementById("result").innerHTML =
+    "CAMERA ERROR:<br>" + error;
 
-          scanLock = false;
+});
 
-          document.getElementById("result").innerHTML =
-            "Ready for next scan";
-
-        }, 10000);
-
-      })
-
-      .catch(error => {
-
-        document.getElementById("result").innerHTML =
-          "Error: " + error;
-
-        // Allow another scan after an error
-        setTimeout(function() {
-          scanLock = false;
-        }, 5000);
-
-      });
-
-    }
-
-    const html5QrCode = new Html5Qrcode("reader");
-
-    Html5Qrcode.getCameras()
-
-      .then(devices => {
-
-        if (devices && devices.length) {
-
-          html5QrCode.start(
-
-            { facingMode: "environment" },
-
-            {
-              fps: 10,
-              qrbox: 250
-            },
-
-            onScanSuccess
-
-          );
-
-        } else {
-
-          document.getElementById("result").innerHTML =
-            "No camera found.";
-
-        }
-
-      })
-
-      .catch(err => {
-
-        document.getElementById("result").innerHTML =
-          "Camera Error: " + err;
-
-      });
-
-  </script>
+</script>
 
 </body>
 </html>
