@@ -181,88 +181,122 @@ function onScanSuccess(decodedText) {
    DISPLAY RESULT
 ========================= */
 
+  
 function showResult(result) {
 
   let message = result.trim();
+  let data;
 
-
-  /* TIME IN */
-
-  if (message === "TIME IN recorded") {
-
-    document.getElementById("result").className =
-      "success";
-
-    document.getElementById("result").innerHTML =
-      "✅<br>" +
-      "<div class='name'>TIME IN</div>" +
-      "Attendance recorded";
-
-    unlockScanner(8000);
-
-    return;
-
+  try {
+    data = JSON.parse(message);
   }
 
+  catch (error) {
 
-  /* TIME OUT */
+    if (message.startsWith("Please wait")) {
 
-  if (message.startsWith("TIME OUT recorded")) {
+      document.getElementById("result").className = "wait";
 
-    document.getElementById("result").className =
-      "success";
+      document.getElementById("result").innerHTML =
+        "⏳<br>" + message;
 
-    document.getElementById("result").innerHTML =
-      "✅<br>" +
-      "<div class='name'>TIME OUT</div>" +
-      message.replace(
-        "TIME OUT recorded - ",
-        ""
-      );
+      unlockScanner(3000);
 
-    unlockScanner(8000);
+      return;
+    }
 
-    return;
+    if (message === "Attendance already completed") {
 
-  }
+      document.getElementById("result").className = "wait";
 
+      document.getElementById("result").innerHTML =
+        "ℹ️<br>Attendance already completed";
 
-  /* WAIT MESSAGE */
+      unlockScanner(5000);
 
-  if (message.startsWith("Please wait")) {
+      return;
+    }
 
-    document.getElementById("result").className =
-      "wait";
+    document.getElementById("result").className = "wait";
 
     document.getElementById("result").innerHTML =
-      "⏳<br>" +
       message;
-
-    unlockScanner(3000);
-
-    return;
-
-  }
-
-
-  /* ALREADY COMPLETED */
-
-  if (message === "Attendance already completed") {
-
-    document.getElementById("result").className =
-      "wait";
-
-    document.getElementById("result").innerHTML =
-      "ℹ️<br>Attendance already completed";
 
     unlockScanner(5000);
 
     return;
-
   }
 
 
-  /* OTHER RESPONSE */
+  if (data.type === "TIME_IN") {
+
+    document.getElementById("result").className =
+      "success";
+
+    document.getElementById("result").innerHTML =
+
+      "✅<br>" +
+
+      "<div class='name'>TIME IN</div>" +
+
+      "<strong>" +
+      data.name +
+      "</strong><br>" +
+
+      data.employeeID +
+      "<br>" +
+
+      data.position +
+      "<br><br>" +
+
+      "<strong>" +
+      data.time +
+      "</strong><br><br>" +
+
+      data.message;
+
+    unlockScanner(8000);
+
+    return;
+  }
+
+
+  if (data.type === "TIME_OUT") {
+
+    document.getElementById("result").className =
+      "success";
+
+    document.getElementById("result").innerHTML =
+
+      "✅<br>" +
+
+      "<div class='name'>TIME OUT</div>" +
+
+      "<strong>" +
+      data.name +
+      "</strong><br>" +
+
+      data.employeeID +
+      "<br>" +
+
+      data.position +
+      "<br><br>" +
+
+      "<strong>" +
+      data.time +
+      "</strong><br>" +
+
+      "Total Hours: " +
+      data.totalHours +
+      "<br><br>" +
+
+      data.message;
+
+    unlockScanner(8000);
+
+    return;
+  }
+
 
   document.getElementById("result").className =
     "wait";
@@ -273,7 +307,6 @@ function showResult(result) {
   unlockScanner(5000);
 
 }
-
 
 /* =========================
    SCANNER UNLOCK
