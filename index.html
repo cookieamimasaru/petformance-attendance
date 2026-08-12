@@ -36,13 +36,14 @@ h3 {
 
 #result {
   margin: 20px auto;
-  max-width: 400px;
+  max-width: 450px;
   padding: 20px;
   font-size: 20px;
   font-weight: bold;
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  min-height: 70px;
 }
 
 .name {
@@ -62,9 +63,25 @@ h3 {
   color: #1565c0;
 }
 
+.employee-photo {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 10px auto 20px auto;
+  display: block;
+}
+
+.photo-loading {
+  color: #777;
+  font-size: 14px;
+  font-weight: normal;
+}
+
 </style>
 
 </head>
+
 
 <body>
 
@@ -84,9 +101,17 @@ h3 {
 let scanLock = false;
 
 
-/* =========================
-   QR SCAN
-========================= */
+// ============================================================
+// APPS SCRIPT URL
+// ============================================================
+
+const appsScriptUrl =
+  "https://script.google.com/macros/s/AKfycbxk-aX6MmYty1x19roVee3vRf5v7YQWdpSH4CJjI7dtZ5_UMpcrMW5HuhEtJhSqe8gx/exec";
+
+
+// ============================================================
+// QR SCAN
+// ============================================================
 
 function onScanSuccess(decodedText) {
 
@@ -96,40 +121,55 @@ function onScanSuccess(decodedText) {
 
   scanLock = true;
 
-  document.getElementById("result").className = "ready";
 
-  document.getElementById("result").innerHTML =
+  const result =
+    document.getElementById("result");
+
+
+  result.className =
+    "ready";
+
+
+  result.innerHTML =
     "Reading QR...";
 
+
+  // ==========================================================
+  // GET EMPLOYEE CODE
+  // ==========================================================
 
   let employeeCode = "";
 
 
-  /* =========================
-     GET EMPLOYEE CODE
-  ========================= */
-
   try {
 
-    const qrUrl = new URL(decodedText);
+    const qrUrl =
+      new URL(decodedText);
+
 
     employeeCode =
-      qrUrl.searchParams.get("code");
+      qrUrl.searchParams.get(
+        "code"
+      );
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     employeeCode =
       decodedText.trim();
-
   }
 
 
   if (!employeeCode) {
 
-    document.getElementById("result").className = "wait";
+    result.className =
+      "wait";
 
-    document.getElementById("result").innerHTML =
+
+    result.innerHTML =
       "❌<br>No employee code found";
+
 
     unlockScanner(5000);
 
@@ -137,90 +177,270 @@ function onScanSuccess(decodedText) {
   }
 
 
-  /* =========================
-     SEND TO APPS SCRIPT
-  ========================= */
+  // ==========================================================
+  // SEND ATTENDANCE
+  // ==========================================================
 
-  document.getElementById("result").innerHTML =
+  result.className =
+    "ready";
+
+
+  result.innerHTML =
     "Checking employee...";
 
 
-  const appsScriptUrl =
-    "https://script.google.com/macros/s/AKfycbxk-aX6MmYty1x19roVee3vRf5v7YQWdpSH4CJjI7dtZ5_UMpcrMW5HuhEtJhSqe8gx/exec";
+  const requestUrl =
+    appsScriptUrl +
+    "?attendance=1&code=" +
+    encodeURIComponent(
+      employeeCode
+    );
+
+
+  console.log(
+    "Sending attendance request:",
+    employeeCode
+  );
 
 
   fetch(
-    appsScriptUrl +
-    "?attendance=1&code=" +
-    encodeURIComponent(employeeCode)
+    requestUrl,
+    {
+      method: "GET",
+      cache: "no-store"
+    }
   )
 
-  .then(response => response.text())
+  .then(function(response) {
 
-  .then(result => {
+    console.log(
+      "Apps Script HTTP status:",
+      response.status
+    );
 
-    showResult(result);
+
+    if (!response.ok) {
+
+      throw new Error(
+        "HTTP " +
+        response.status
+      );
+    }
+
+
+    return response.text();
 
   })
 
-  .catch(error => {
+  .then(function(responseText) {
 
-    document.getElementById("result").className = "wait";
+    console.log(
+      "Apps Script response length:",
+      responseText.length
+    );
 
-    document.getElementById("result").innerHTML =
-      "❌<br>Connection error";
+
+    console.log(
+      "Apps Script response:",
+      responseText
+    );
+
+
+    showResult(
+      responseText
+    );
+
+  })
+
+  .catch(function(error) {
+
+    console.error(
+      "Attendance request error:",
+      error
+    );
+
+
+    result.className =
+      "wait";
+
+
+    result.innerHTML =
+      "❌<br>Connection error<br><small>" +
+      error.message +
+      "</small>";
+
 
     unlockScanner(5000);
-
   });
 
 }
 
 
-/* =========================
-   DISPLAY RESULT
-========================= */
+// ============================================================
+// SHOW RESULT
+// ============================================================
 
-  
-function showResult(result) {
+function showResult(
+  responseText
+) {
 
-  let message = result.trim();
-  let data;
+  const result =
+    document.getElementById(
+      "result"
+    );
+
+
+  let message =
+    String(
+      responseText || ""
+    ).trim();
+
+
+  // ==========================================================
+  // REMOVE POSSIBLE GOOGLE WRAPPER
+  // ==========================================================
+
+  if (
+    message.startsWith(
+      "<html"
+    ) ||
+    message.startsWith(
+      "<!DOCTYPE"
+    )
+  ) {
+
+    console.error(
+      "Unexpected HTML response:",
+      message.substring(
+        0,
+        500
+      )
+    );
+
+
+    result.className =
+      "wait";
+
+
+    result.innerHTML =
+      "❌<br>Apps Script returned an invalid response.";
+
+
+    unlockScanner(5000);
+
+    return;
+  }
+
+
+  // ==========================================================
+  // PARSE JSON
+  // ==========================================================
+
+  let data = null;
+
 
   try {
-    data = JSON.parse(message);
+
+    data =
+      JSON.parse(
+        message
+      );
+
   }
 
   catch (error) {
 
-    if (message.startsWith("Please wait")) {
+    console.log(
+      "Response is not JSON."
+    );
 
-      document.getElementById("result").className = "wait";
 
-      document.getElementById("result").innerHTML =
-        "⏳<br>" + message;
+    // --------------------------------------------------------
+    // WAIT MESSAGE
+    // --------------------------------------------------------
+
+    if (
+      message.startsWith(
+        "Please wait"
+      )
+    ) {
+
+      result.className =
+        "wait";
+
+
+      result.innerHTML =
+        "⏳<br>" +
+        escapeHtml(
+          message
+        );
+
 
       unlockScanner(3000);
 
       return;
     }
 
-    if (message === "Attendance already completed") {
 
-      document.getElementById("result").className = "wait";
+    // --------------------------------------------------------
+    // ALREADY COMPLETED
+    // --------------------------------------------------------
 
-      document.getElementById("result").innerHTML =
+    if (
+      message ===
+      "Attendance already completed"
+    ) {
+
+      result.className =
+        "wait";
+
+
+      result.innerHTML =
         "ℹ️<br>Attendance already completed";
+
 
       unlockScanner(5000);
 
       return;
     }
 
-    document.getElementById("result").className = "wait";
 
-    document.getElementById("result").innerHTML =
-      message;
+    // --------------------------------------------------------
+    // EMPLOYEE NOT FOUND
+    // --------------------------------------------------------
+
+    if (
+      message ===
+      "Employee not found"
+    ) {
+
+      result.className =
+        "wait";
+
+
+      result.innerHTML =
+        "❌<br>Employee not found";
+
+
+      unlockScanner(5000);
+
+      return;
+    }
+
+
+    // --------------------------------------------------------
+    // OTHER MESSAGE
+    // --------------------------------------------------------
+
+    result.className =
+      "wait";
+
+
+    result.innerHTML =
+      escapeHtml(
+        message
+      );
+
 
     unlockScanner(5000);
 
@@ -228,152 +448,463 @@ function showResult(result) {
   }
 
 
-  if (data.type === "TIME_IN") {
+  // ==========================================================
+  // TIME IN
+  // ==========================================================
 
-    document.getElementById("result").className =
-      "success";
+  if (
+    data.type ===
+    "TIME_IN"
+  ) {
 
-    document.getElementById("result").innerHTML =
-
-      "✅<br>" +
-
-      "<div class='name'>TIME IN</div>" +
-
-      "<strong>" +
-      data.name +
-      "</strong><br>" +
-
-      data.employeeID +
-      "<br>" +
-
-      data.position +
-      "<br><br>" +
-
-      "<strong>" +
-      data.time +
-      "</strong><br><br>" +
-
-      data.message;
-
-    unlockScanner(8000);
-
-    return;
-  }
-
-
-  if (data.type === "TIME_OUT") {
-
-    document.getElementById("result").className =
-      "success";
-
-    document.getElementById("result").innerHTML =
-
-      "✅<br>" +
-
-      "<div class='name'>TIME OUT</div>" +
-
-      "<strong>" +
-      data.name +
-      "</strong><br>" +
-
-      data.employeeID +
-      "<br>" +
-
-      data.position +
-      "<br><br>" +
-
-      "<strong>" +
-      data.time +
-      "</strong><br>" +
-
-      "Total Hours: " +
-      data.totalHours +
-      "<br><br>" +
-
-      data.message;
-
-    unlockScanner(8000);
-
-    return;
-  }
-
-
-  document.getElementById("result").className =
-    "wait";
-
-  document.getElementById("result").innerHTML =
-    message;
-
-  unlockScanner(5000);
-
-}
-
-/* =========================
-   SCANNER UNLOCK
-========================= */
-
-function unlockScanner(delay) {
-
-  setTimeout(function() {
-
-    scanLock = false;
-
-    document.getElementById("result").className =
-      "ready";
-
-    document.getElementById("result").innerHTML =
-      "Ready for next scan";
-
-  }, delay);
-
-}
-
-
-/* =========================
-   START CAMERA
-========================= */
-
-const html5QrCode =
-  new Html5Qrcode("reader");
-
-
-Html5Qrcode.getCameras()
-
-.then(function(devices) {
-
-  if (devices && devices.length) {
-
-    html5QrCode.start(
-
-      { facingMode: "environment" },
-
-      {
-        fps: 10,
-        qrbox: 250
-      },
-
-      onScanSuccess
-
+    showTimeIn(
+      data
     );
 
-  } else {
-
-    document.getElementById("result").innerHTML =
-      "No camera found.";
-
+    return;
   }
 
-})
 
-.catch(function(error) {
+  // ==========================================================
+  // TIME OUT
+  // ==========================================================
 
-  document.getElementById("result").className =
+  if (
+    data.type ===
+    "TIME_OUT"
+  ) {
+
+    showTimeOut(
+      data
+    );
+
+    return;
+  }
+
+
+  // ==========================================================
+  // UNKNOWN RESPONSE
+  // ==========================================================
+
+  result.className =
     "wait";
 
-  document.getElementById("result").innerHTML =
-    "Camera Error";
 
-});
+  result.innerHTML =
+    "❌<br>Unknown attendance response";
+
+
+  unlockScanner(5000);
+}
+
+
+// ============================================================
+// SHOW TIME IN
+// ============================================================
+
+function showTimeIn(
+  data
+) {
+
+  const result =
+    document.getElementById(
+      "result"
+    );
+
+
+  result.className =
+    "success";
+
+
+  result.innerHTML =
+
+    "✅<br>" +
+
+    "<div class='name'>" +
+    "TIME IN" +
+    "</div>" +
+
+    "<strong>" +
+    escapeHtml(
+      data.name
+    ) +
+    "</strong><br>" +
+
+    escapeHtml(
+      data.employeeID
+    ) +
+    "<br>" +
+
+    escapeHtml(
+      data.position
+    ) +
+    "<br><br>" +
+
+    "<strong>" +
+    escapeHtml(
+      data.time
+    ) +
+    "</strong><br><br>" +
+
+    escapeHtml(
+      data.message
+    );
+
+
+  // ==========================================================
+  // PHOTO
+  // ==========================================================
+
+  loadEmployeePhoto(
+    data.photo
+  );
+
+
+  unlockScanner(8000);
+}
+
+
+// ============================================================
+// SHOW TIME OUT
+// ============================================================
+
+function showTimeOut(
+  data
+) {
+
+  const result =
+    document.getElementById(
+      "result"
+    );
+
+
+  result.className =
+    "success";
+
+
+  result.innerHTML =
+
+    "✅<br>" +
+
+    "<div class='name'>" +
+    "TIME OUT" +
+    "</div>" +
+
+    "<strong>" +
+    escapeHtml(
+      data.name
+    ) +
+    "</strong><br>" +
+
+    escapeHtml(
+      data.employeeID
+    ) +
+    "<br>" +
+
+    escapeHtml(
+      data.position
+    ) +
+    "<br><br>" +
+
+    "<strong>" +
+    escapeHtml(
+      data.time
+    ) +
+    "</strong><br>" +
+
+    "Total Hours: " +
+    escapeHtml(
+      data.totalHours
+    ) +
+
+    "<br><br>" +
+
+    escapeHtml(
+      data.message
+    );
+
+
+  // Load photo separately
+  loadEmployeePhoto(
+    data.photo
+  );
+
+
+  unlockScanner(8000);
+}
+
+
+// ============================================================
+// LOAD EMPLOYEE PHOTO
+// ============================================================
+
+function loadEmployeePhoto(
+  photoUrl
+) {
+
+  if (
+    !photoUrl ||
+    String(photoUrl).trim() === ""
+  ) {
+
+    return;
+  }
+
+
+  const result =
+    document.getElementById(
+      "result"
+    );
+
+
+  const loading =
+    document.createElement(
+      "div"
+    );
+
+
+  loading.className =
+    "photo-loading";
+
+
+  loading.innerHTML =
+    "Loading photo...";
+
+
+  result.appendChild(
+    loading
+  );
+
+
+  const img =
+    document.createElement(
+      "img"
+    );
+
+
+  img.className =
+    "employee-photo";
+
+
+  img.alt =
+    "Employee Photo";
+
+
+  img.onload =
+    function() {
+
+      loading.remove();
+
+      result.insertBefore(
+        img,
+        result.firstChild
+      );
+    };
+
+
+  img.onerror =
+    function() {
+
+      console.warn(
+        "Employee photo could not be loaded."
+      );
+
+
+      loading.remove();
+    };
+
+
+  // ==========================================================
+  // GOOGLE DRIVE PHOTO
+  // ==========================================================
+
+  let url =
+    String(
+      photoUrl
+    ).trim();
+
+
+  // Convert Google Drive /lh3 link if necessary
+  if (
+    url.indexOf(
+      "lh3.googleusercontent.com/d/"
+    ) !== -1
+  ) {
+
+    const match =
+      url.match(
+        /\/d\/([^/?]+)/ 
+      );
+
+
+    if (match) {
+
+      const fileId =
+        match[1];
+
+
+      url =
+        "https://lh3.googleusercontent.com/d/" +
+        fileId;
+    }
+  }
+
+
+  img.src =
+    url;
+}
+
+
+// ============================================================
+// UNLOCK SCANNER
+// ============================================================
+
+function unlockScanner(
+  delay
+) {
+
+  setTimeout(
+    function() {
+
+      scanLock =
+        false;
+
+
+      const result =
+        document.getElementById(
+          "result"
+        );
+
+
+      result.className =
+        "ready";
+
+
+      result.innerHTML =
+        "Ready for next scan";
+
+    },
+    delay
+  );
+}
+
+
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+
+function escapeHtml(
+  value
+) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
+    return "";
+  }
+
+
+  return String(value)
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+}
+
+
+// ============================================================
+// START CAMERA
+// ============================================================
+
+const html5QrCode =
+  new Html5Qrcode(
+    "reader"
+  );
+
+
+Html5Qrcode
+  .getCameras()
+
+  .then(
+    function(devices) {
+
+      if (
+        devices &&
+        devices.length
+      ) {
+
+        html5QrCode.start(
+
+          {
+            facingMode:
+              "environment"
+          },
+
+          {
+            fps: 10,
+            qrbox: 250
+          },
+
+          onScanSuccess
+
+        );
+
+      } else {
+
+        document.getElementById(
+          "result"
+        ).className =
+          "wait";
+
+
+        document.getElementById(
+          "result"
+        ).innerHTML =
+          "No camera found.";
+      }
+
+    }
+  )
+
+  .catch(
+    function(error) {
+
+      console.error(
+        "Camera error:",
+        error
+      );
+
+
+      document.getElementById(
+        "result"
+      ).className =
+        "wait";
+
+
+      document.getElementById(
+        "result"
+      ).innerHTML =
+        "Camera Error";
+    }
+  );
 
 </script>
 
