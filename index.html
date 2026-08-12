@@ -110,6 +110,25 @@ const appsScriptUrl =
 
 
 // ============================================================
+// AUTHORIZED DEVICE ID
+// ============================================================
+
+// This must match the Device ID in:
+// Attendance Devices → TEST-DEVICE-001
+
+const attendanceDeviceId =
+  "TEST-DEVICE-001";
+
+
+// ============================================================
+// DEVICE NAME
+// ============================================================
+
+const attendanceDeviceName =
+  "Clinic Attendance Phone";
+
+
+// ============================================================
 // QR SCAN
 // ============================================================
 
@@ -146,11 +165,8 @@ function onScanSuccess(decodedText) {
     const qrUrl =
       new URL(decodedText);
 
-
     employeeCode =
-      qrUrl.searchParams.get(
-        "code"
-      );
+      qrUrl.searchParams.get("code");
 
   }
 
@@ -158,6 +174,7 @@ function onScanSuccess(decodedText) {
 
     employeeCode =
       decodedText.trim();
+
   }
 
 
@@ -166,10 +183,8 @@ function onScanSuccess(decodedText) {
     result.className =
       "wait";
 
-
     result.innerHTML =
       "❌<br>No employee code found";
-
 
     unlockScanner(5000);
 
@@ -184,24 +199,43 @@ function onScanSuccess(decodedText) {
   result.className =
     "ready";
 
-
   result.innerHTML =
     "Checking employee...";
 
 
+  // ==========================================================
+  // BUILD REQUEST
+  // ==========================================================
+
   const requestUrl =
     appsScriptUrl +
-    "?attendance=1&code=" +
-    encodeURIComponent(
-      employeeCode
-    );
+    "?attendance=1" +
+    "&code=" +
+    encodeURIComponent(employeeCode) +
+    "&deviceId=" +
+    encodeURIComponent(attendanceDeviceId) +
+    "&deviceName=" +
+    encodeURIComponent(attendanceDeviceName);
 
 
   console.log(
-    "Sending attendance request:",
+    "Sending attendance request:"
+  );
+
+  console.log(
+    "Employee:",
     employeeCode
   );
 
+  console.log(
+    "Device:",
+    attendanceDeviceId
+  );
+
+
+  // ==========================================================
+  // SEND TO APPS SCRIPT
+  // ==========================================================
 
   fetch(
     requestUrl,
@@ -232,6 +266,7 @@ function onScanSuccess(decodedText) {
 
   })
 
+
   .then(function(responseText) {
 
     console.log(
@@ -252,6 +287,7 @@ function onScanSuccess(decodedText) {
 
   })
 
+
   .catch(function(error) {
 
     console.error(
@@ -266,11 +302,12 @@ function onScanSuccess(decodedText) {
 
     result.innerHTML =
       "❌<br>Connection error<br><small>" +
-      error.message +
+      escapeHtml(error.message) +
       "</small>";
 
 
     unlockScanner(5000);
+
   });
 
 }
@@ -301,12 +338,8 @@ function showResult(
   // ==========================================================
 
   if (
-    message.startsWith(
-      "<html"
-    ) ||
-    message.startsWith(
-      "<!DOCTYPE"
-    )
+    message.startsWith("<html") ||
+    message.startsWith("<!DOCTYPE")
   ) {
 
     console.error(
@@ -353,6 +386,29 @@ function showResult(
     console.log(
       "Response is not JSON."
     );
+
+
+    // --------------------------------------------------------
+    // DEVICE NOT AUTHORIZED
+    // --------------------------------------------------------
+
+    if (
+      message ===
+      "Unauthorized attendance device"
+    ) {
+
+      result.className =
+        "wait";
+
+
+      result.innerHTML =
+        "🔒<br>Attendance device not authorized";
+
+
+      unlockScanner(5000);
+
+      return;
+    }
 
 
     // --------------------------------------------------------
@@ -495,6 +551,7 @@ function showResult(
 
 
   unlockScanner(5000);
+
 }
 
 
@@ -561,6 +618,7 @@ function showTimeIn(
 
 
   unlockScanner(8000);
+
 }
 
 
@@ -624,13 +682,17 @@ function showTimeOut(
     );
 
 
-  // Load photo separately
+  // ==========================================================
+  // PHOTO
+  // ==========================================================
+
   loadEmployeePhoto(
     data.photo
   );
 
 
   unlockScanner(8000);
+
 }
 
 
@@ -695,10 +757,12 @@ function loadEmployeePhoto(
 
       loading.remove();
 
+
       result.insertBefore(
         img,
         result.firstChild
       );
+
     };
 
 
@@ -711,6 +775,7 @@ function loadEmployeePhoto(
 
 
       loading.remove();
+
     };
 
 
@@ -724,7 +789,6 @@ function loadEmployeePhoto(
     ).trim();
 
 
-  // Convert Google Drive /lh3 link if necessary
   if (
     url.indexOf(
       "lh3.googleusercontent.com/d/"
@@ -733,7 +797,7 @@ function loadEmployeePhoto(
 
     const match =
       url.match(
-        /\/d\/([^/?]+)/ 
+        /\/d\/([^/?]+)/
       );
 
 
@@ -746,12 +810,15 @@ function loadEmployeePhoto(
       url =
         "https://lh3.googleusercontent.com/d/" +
         fileId;
+
     }
+
   }
 
 
   img.src =
     url;
+
 }
 
 
@@ -786,6 +853,7 @@ function unlockScanner(
     },
     delay
   );
+
 }
 
 
@@ -807,26 +875,32 @@ function escapeHtml(
 
 
   return String(value)
+
     .replace(
       /&/g,
       "&amp;"
     )
+
     .replace(
       /</g,
       "&lt;"
     )
+
     .replace(
       />/g,
       "&gt;"
     )
+
     .replace(
       /"/g,
       "&quot;"
     )
+
     .replace(
       /'/g,
       "&#039;"
     );
+
 }
 
 
@@ -867,7 +941,9 @@ Html5Qrcode
 
         );
 
-      } else {
+      }
+
+      else {
 
         document.getElementById(
           "result"
@@ -879,6 +955,7 @@ Html5Qrcode
           "result"
         ).innerHTML =
           "No camera found.";
+
       }
 
     }
@@ -903,6 +980,7 @@ Html5Qrcode
         "result"
       ).innerHTML =
         "Camera Error";
+
     }
   );
 
