@@ -16,219 +16,611 @@
 
   <style>
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
       min-height: 100vh;
-      padding: 12px 8px;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #fffaf5 0%, #fff3e6 50%, #fffaf5 100%);
+      padding: 20px 12px;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      background:
+        linear-gradient(
+          135deg,
+          #fffaf5 0%,
+          #fff3e6 50%,
+          #fffaf5 100%
+        );
+
       color: #333;
     }
 
+
+    /* =========================
+       MAIN TERMINAL
+       ========================= */
+
     .terminal {
+
       width: 100%;
       max-width: 620px;
+
       margin: 0 auto;
-      padding: 18px 18px 20px;
-      background: #fff;
+
+      padding: 28px 22px 24px;
+
+      background: #ffffff;
+
       border-radius: 26px;
-      box-shadow: 0 15px 45px rgba(0,0,0,0.10);
-      border: 1px solid #f3e5d8;
+
+      box-shadow:
+        0 15px 45px
+        rgba(0, 0, 0, 0.10);
+
+      border:
+        1px solid #f3e5d8;
+
     }
 
-    /* LOGO — intentionally compact to remove dead space */
+
+    /* =========================
+       LOGO
+       ========================= */
+
     .logo-container {
+
       text-align: center;
-      height: 105px;
-      margin: 0 0 0;
-      overflow: hidden;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
+
+      margin-bottom: 0;
+
+      line-height: 0;
+
     }
 
     .logo {
-      width: 300px;
-      max-width: 92%;
-      height: 105px;
+
+      width: 270px;
+
+      max-width: 85%;
+
+      height: auto;
+
       display: block;
-      margin: -2px auto 0;
-      object-fit: cover;
-      object-position: center top;
+
+      margin: 0 auto -4px;
+
+      object-fit: contain;
+
     }
+
+
+    /* =========================
+       TERMINAL TITLE
+       ========================= */
 
     .terminal-title {
+
       margin-top: 0;
+
       color: #555;
+
       font-size: 16px;
+
       font-weight: 800;
+
       letter-spacing: 2px;
+
       text-transform: uppercase;
+
       text-align: center;
+
     }
+
 
     .title-line {
+
       width: 65px;
+
       height: 4px;
+
       background: #f58220;
+
       border-radius: 10px;
-      margin: 7px auto 16px;
+
+      margin: 8px auto 18px;
+
     }
+
+
+    /* =========================
+       DEVICE STATUS
+       ========================= */
 
     .device-status {
+
       display: inline-flex;
+
       align-items: center;
+
       gap: 8px;
+
       padding: 8px 16px;
+
       border-radius: 30px;
+
       background: #e8f5e9;
+
       color: #188038;
+
       font-size: 14px;
+
       font-weight: bold;
+
     }
 
-    .status-wrapper { text-align: center; }
+
+    .status-wrapper {
+
+      text-align: center;
+
+    }
+
 
     .status-dot {
+
       width: 9px;
+
       height: 9px;
+
       border-radius: 50%;
+
       background: #188038;
-      box-shadow: 0 0 0 4px rgba(24,128,56,0.10);
+
+      box-shadow:
+        0 0 0 4px
+        rgba(24,128,56,0.10);
+
     }
+
 
     .device-name {
-      margin: 6px 0 16px;
+
+      margin: 7px 0 20px;
+
       text-align: center;
+
       color: #8a8a8a;
+
       font-size: 13px;
+
     }
+
+
+    /* =========================
+       READY BOX
+       ========================= */
 
     .ready-box {
-      margin-bottom: 14px;
-      padding: 16px 15px;
-      background: linear-gradient(135deg, #fffaf5, #fff3e6);
-      border: 2px solid #f9dfc7;
+
+      margin-bottom: 18px;
+
+      padding: 18px 15px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #fffaf5,
+          #fff3e6
+        );
+
+      border:
+        2px solid #f9dfc7;
+
       border-radius: 18px;
+
       text-align: center;
+
     }
+
 
     .ready-icon {
+
       font-size: 30px;
-      margin-bottom: 4px;
+
+      margin-bottom: 5px;
+
     }
+
 
     .ready-title {
+
       color: #f58220;
+
       font-size: 23px;
+
       font-weight: 900;
+
       letter-spacing: 1px;
+
     }
+
 
     .ready-subtitle {
-      margin-top: 4px;
+
+      margin-top: 5px;
+
       color: #888;
+
       font-size: 14px;
+
     }
+
+
+    /* =========================
+       QR CAMERA
+       ========================= */
 
     #reader {
+
       width: 100%;
+
       max-width: 400px;
-      margin: 0 auto 14px;
+
+      margin: 0 auto 18px;
+
       overflow: hidden;
+
       border-radius: 20px;
+
       background: #111;
-      border: 4px solid #f58220;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+
+      border:
+        4px solid #f58220;
+
+      box-shadow:
+        0 6px 20px
+        rgba(0,0,0,0.12);
+
     }
 
-    #reader video { width: 100% !important; border-radius: 15px !important; }
-    #reader__scan_region { border-radius: 15px !important; }
-    #reader img { max-width: 100%; }
+
+    #reader video {
+
+      width: 100% !important;
+
+      border-radius: 15px !important;
+
+    }
+
+
+    #reader__scan_region {
+
+      border-radius: 15px !important;
+
+    }
+
+
+    #reader img {
+
+      max-width: 100%;
+
+    }
+
+
+    /* =========================
+       RESULT CARD
+       ========================= */
 
     #result {
+
       width: 100%;
+
       max-width: 520px;
-      min-height: 64px;
-      margin: 12px auto 0;
-      padding: 16px;
-      background: #fff;
+
+      min-height: 78px;
+
+      margin: 15px auto 0;
+
+      padding: 20px;
+
+      background: #ffffff;
+
       border-radius: 18px;
-      border: 2px solid #eeeeee;
-      box-shadow: 0 5px 18px rgba(0,0,0,0.06);
+
+      border:
+        2px solid #eeeeee;
+
+      box-shadow:
+        0 5px 18px
+        rgba(0,0,0,0.06);
+
       font-size: 18px;
+
       font-weight: bold;
+
       text-align: center;
-      transition: all 0.25s ease;
+
+      transition:
+        all 0.25s ease;
+
     }
+
 
     .ready {
+
       color: #f58220;
-      border-color: #f9dfc7 !important;
-      background: #fffaf5 !important;
+
+      border-color:
+        #f9dfc7 !important;
+
+      background:
+        #fffaf5 !important;
+
     }
+
 
     .success {
+
       color: #188038;
-      border-color: #d9f0df !important;
-      background: #fbfffc !important;
+
+      border-color:
+        #d9f0df !important;
+
+      background:
+        #fbfffc !important;
+
     }
+
 
     .wait {
+
       color: #c62828;
-      border-color: #f5d6d6 !important;
-      background: #fffafa !important;
+
+      border-color:
+        #f5d6d6 !important;
+
+      background:
+        #fffafa !important;
+
     }
+
+
+    /* =========================
+       EMPLOYEE PHOTO
+       ========================= */
 
     .employee-photo {
-      width: 145px; height: 145px; object-fit: cover; display: block;
-      margin: 0 auto 15px; border-radius: 50%; border: 5px solid #fff;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+
+      width: 145px;
+
+      height: 145px;
+
+      object-fit: cover;
+
+      display: block;
+
+      margin: 0 auto 15px;
+
+      border-radius: 50%;
+
+      border:
+        5px solid #ffffff;
+
+      box-shadow:
+        0 5px 20px
+        rgba(0,0,0,0.15);
+
     }
 
-    .photo-loading { margin-top: 10px; color: #999; font-size: 13px; font-weight: normal; }
 
-    .attendance-type { margin-bottom: 12px; color: #188038; font-size: 22px; font-weight: 900; letter-spacing: 1px; }
-    .name { margin: 10px 0; color: #333; font-size: 26px; line-height: 1.25; font-weight: 800; }
-    .employee-info { color: #666; font-size: 16px; line-height: 1.6; font-weight: normal; }
-    .attendance-time { display: inline-block; margin-top: 15px; padding: 10px 20px; background: #e8f5e9; color: #188038; border-radius: 12px; font-size: 25px; font-weight: 900; }
-    .total-hours { margin-top: 10px; color: #666; font-size: 16px; font-weight: normal; }
+    .photo-loading {
+
+      margin-top: 10px;
+
+      color: #999;
+
+      font-size: 13px;
+
+      font-weight: normal;
+
+    }
+
+
+    /* =========================
+       ATTENDANCE RESULT
+       ========================= */
+
+    .attendance-type {
+
+      margin-bottom: 12px;
+
+      color: #188038;
+
+      font-size: 22px;
+
+      font-weight: 900;
+
+      letter-spacing: 1px;
+
+    }
+
+
+    .name {
+
+      margin: 10px 0;
+
+      color: #333;
+
+      font-size: 26px;
+
+      line-height: 1.25;
+
+      font-weight: 800;
+
+    }
+
+
+    .employee-info {
+
+      color: #666;
+
+      font-size: 16px;
+
+      line-height: 1.6;
+
+      font-weight: normal;
+
+    }
+
+
+    .attendance-time {
+
+      display: inline-block;
+
+      margin-top: 15px;
+
+      padding: 10px 20px;
+
+      background: #e8f5e9;
+
+      color: #188038;
+
+      border-radius: 12px;
+
+      font-size: 25px;
+
+      font-weight: 900;
+
+    }
+
+
+    .total-hours {
+
+      margin-top: 10px;
+
+      color: #666;
+
+      font-size: 16px;
+
+      font-weight: normal;
+
+    }
+
+
+    /* =========================
+       FOOTER
+       ========================= */
 
     .footer {
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px solid #eeeeee;
+
+      margin-top: 22px;
+
+      padding-top: 15px;
+
+      border-top:
+        1px solid #eeeeee;
+
       color: #f58220;
+
       font-size: 12px;
+
       line-height: 1.5;
+
       text-align: center;
-      font-weight: 700;
+
+      font-weight: 600;
+
     }
 
-    .footer strong { color: #f58220; font-weight: 800; }
+
+    .footer strong {
+
+      color: #f58220;
+
+      font-weight: 800;
+
+    }
+
+
+    /* =========================
+       MOBILE
+       ========================= */
 
     @media (max-width: 480px) {
-      body { padding: 7px 6px; }
-      .terminal { padding: 12px 12px 16px; border-radius: 20px; }
 
-      /* Extra-tight mobile header */
-      .logo-container { height: 92px; }
-      .logo { width: 270px; max-width: 92%; height: 92px; }
+      body {
 
-      .terminal-title { font-size: 14px; letter-spacing: 1.5px; }
-      .title-line { margin: 6px auto 14px; }
-      .device-name { margin-bottom: 13px; }
-      .ready-box { padding: 14px 12px; margin-bottom: 12px; }
-      .ready-title { font-size: 20px; }
-      #reader { max-width: 340px; }
-      .name { font-size: 23px; }
-      .attendance-time { font-size: 22px; }
-      .footer { margin-top: 14px; padding-top: 10px; font-size: 11px; }
+        padding:
+          10px 7px;
+
+      }
+
+
+      .terminal {
+
+        padding:
+          22px 13px 20px;
+
+        border-radius:
+          20px;
+
+      }
+
+
+      .logo {
+
+        width: 240px;
+
+        margin-bottom: -3px;
+
+      }
+
+
+      .terminal-title {
+
+        font-size: 14px;
+
+        letter-spacing: 1.5px;
+
+      }
+
+
+      .ready-title {
+
+        font-size: 20px;
+
+      }
+
+
+      #reader {
+
+        max-width: 340px;
+
+      }
+
+
+      .name {
+
+        font-size: 23px;
+
+      }
+
+
+      .attendance-time {
+
+        font-size: 22px;
+
+      }
+
     }
 
-</style>
+  </style>
 
 </head>
 
