@@ -62,7 +62,7 @@
       margin: 0 auto;
 
       padding:
-        18px 20px 20px;
+        10px 18px 18px;
 
       background: #ffffff;
 
@@ -92,9 +92,9 @@
 
     .logo {
 
-      width: 245px;
+      width: 230px;
 
-      max-width: 82%;
+      max-width: 85%;
 
       height: auto;
 
@@ -138,7 +138,7 @@
     .terminal-title {
 
       margin:
-        7px 0 0;
+        2px 0 0;
 
       color: #555;
 
@@ -162,7 +162,7 @@
       height: 4px;
 
       margin:
-        6px auto 14px;
+        4px auto 10px;
 
       background: #f58220;
 
@@ -226,7 +226,7 @@
     .device-name {
 
       margin:
-        6px 0 15px;
+        5px 0 10px;
 
       color: #888;
 
@@ -243,10 +243,10 @@
 
     .ready-box {
 
-      margin-bottom: 14px;
+      margin-bottom: 10px;
 
       padding:
-        15px 14px;
+        12px 14px;
 
       background:
         linear-gradient(
@@ -817,12 +817,6 @@
     <!-- =======================================================
          CLINIC NAME
          ======================================================= -->
-
-    <div class="clinic-name">
-
-      Petformance Veterinary Animal Health and Wellness Clinic
-
-    </div>
 
 
     <!-- =======================================================
@@ -1723,44 +1717,20 @@ function loadEmployeePhoto(photoUrl) {
 
 function unlockScanner(delay) {
 
+  setTimeout(function() {
 
-  setTimeout(
+    scanLock = false;
 
-    function() {
+    const result =
+      document.getElementById("result");
 
+    result.className = "ready";
 
-      scanLock =
-        false;
+    result.innerHTML = "";
 
-
-      const result =
-        document.getElementById("result");
-
-
-      result.className =
-        "ready";
-
-
-      result.innerHTML =
-
-        "<div style='font-size:30px;margin-bottom:5px;'>📷</div>" +
-
-        "<strong>READY TO SCAN</strong>" +
-
-        "<div style='font-size:13px;font-weight:normal;color:#888;margin-top:6px;'>" +
-
-        "Scan your employee QR code" +
-
-        "</div>";
-
-    },
-
-    delay
-
-  );
+  }, delay);
 
 }
-
 
 /* ============================================================
    ESCAPE HTML
