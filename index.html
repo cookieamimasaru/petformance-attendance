@@ -1480,92 +1480,109 @@ function escapeHtml(
 
 
 // ============================================================
-// START CAMERA
+// START CAMERA - BACK CAMERA
 // ============================================================
 
 const html5QrCode =
-  new Html5Qrcode(
-    "reader"
+  new Html5Qrcode("reader");
+
+Html5Qrcode.getCameras()
+
+.then(function(devices) {
+
+  if (!devices || !devices.length) {
+
+    document.getElementById("result").className = "wait";
+
+    document.getElementById("result").innerHTML =
+      "❌<br>No camera found.";
+
+    return;
+  }
+
+  console.log("Available cameras:", devices);
+
+  // Try to find the rear/back camera by its name
+  let backCamera = devices.find(function(device) {
+
+    const label =
+      (device.label || "").toLowerCase();
+
+    return (
+      label.includes("back") ||
+      label.includes("rear") ||
+      label.includes("environment")
+    );
+
+  });
+
+  // If the browser does not provide camera names,
+  // use the environment-facing camera setting.
+  if (backCamera) {
+
+    console.log(
+      "✅ Back camera selected:",
+      backCamera.label
+    );
+
+    html5QrCode.start(
+
+      backCamera.id,
+
+      {
+        fps: 10,
+        qrbox: 250
+      },
+
+      onScanSuccess
+
+    );
+
+  } else {
+
+    console.log(
+      "⚠️ Back camera name not available."
+    );
+
+    console.log(
+      "Using environment-facing camera."
+    );
+
+    html5QrCode.start(
+
+      {
+        facingMode: {
+          ideal: "environment"
+        }
+      },
+
+      {
+        fps: 10,
+        qrbox: 250
+      },
+
+      onScanSuccess
+
+    );
+
+  }
+
+})
+
+.catch(function(error) {
+
+  console.error(
+    "Camera error:",
+    error
   );
 
+  document.getElementById("result").className =
+    "wait";
 
-Html5Qrcode
-  .getCameras()
+  document.getElementById("result").innerHTML =
+    "❌<br>Camera Error";
 
-  .then(
-    function(devices) {
-
-
-      if (
-        devices &&
-        devices.length
-      ) {
-
-
-        html5QrCode.start(
-
-          {
-            facingMode:
-              "environment"
-          },
-
-          {
-            fps: 10,
-
-            qrbox: 250
-          },
-
-          onScanSuccess
-
-        );
-
-
-      }
-
-      else {
-
-
-        document.getElementById(
-          "result"
-        ).className =
-          "wait";
-
-
-        document.getElementById(
-          "result"
-        ).innerHTML =
-          "❌<br>No camera found.";
-
-      }
-
-    }
-  )
-
-
-  .catch(
-    function(error) {
-
-
-      console.error(
-        "Camera error:",
-        error
-      );
-
-
-      document.getElementById(
-        "result"
-      ).className =
-        "wait";
-
-
-      document.getElementById(
-        "result"
-      ).innerHTML =
-        "❌<br>Camera Error";
-
-    }
-  );
-
+});
 
 </script>
 
