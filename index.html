@@ -74,18 +74,29 @@
        ========================= */
 
     .logo-container {
-  text-align: center;
-  margin-bottom: -35px;
-}
 
-.logo {
-  width: 270px;
-  max-width: 85%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  object-fit: contain;
-}
+      text-align: center;
+
+      margin-bottom: -35px;
+
+    }
+
+
+    .logo {
+
+      width: 270px;
+
+      max-width: 85%;
+
+      height: auto;
+
+      display: block;
+
+      margin: 0 auto;
+
+      object-fit: contain;
+
+    }
 
 
     /* =========================
@@ -93,15 +104,24 @@
        ========================= */
 
     .terminal-title {
-  margin-top: 0;
-  margin-bottom: 0;
-  color: #555;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-align: center;
-}
+
+      margin-top: 0;
+
+      margin-bottom: 0;
+
+      color: #555;
+
+      font-size: 16px;
+
+      font-weight: 800;
+
+      letter-spacing: 2px;
+
+      text-transform: uppercase;
+
+      text-align: center;
+
+    }
 
 
     .title-line {
@@ -373,6 +393,127 @@
 
 
     /* =========================
+       ATTENDANCE RESULT
+       ========================= */
+
+    .success-icon {
+
+      width: 58px;
+
+      height: 58px;
+
+      margin: 0 auto 10px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      border-radius: 50%;
+
+      background: #e8f5e9;
+
+      color: #188038;
+
+      font-size: 30px;
+
+      font-weight: 900;
+
+    }
+
+
+    .attendance-type {
+
+      margin-bottom: 10px;
+
+      color: #188038;
+
+      font-size: 23px;
+
+      font-weight: 900;
+
+      letter-spacing: 1px;
+
+    }
+
+
+    .name {
+
+      margin: 8px 0;
+
+      color: #333;
+
+      font-size: 26px;
+
+      line-height: 1.25;
+
+      font-weight: 800;
+
+    }
+
+
+    .employee-info {
+
+      color: #666;
+
+      font-size: 16px;
+
+      line-height: 1.6;
+
+      font-weight: normal;
+
+    }
+
+
+    .attendance-time {
+
+      display: inline-block;
+
+      margin-top: 15px;
+
+      padding: 10px 24px;
+
+      background: #e8f5e9;
+
+      color: #188038;
+
+      border-radius: 12px;
+
+      font-size: 25px;
+
+      font-weight: 900;
+
+    }
+
+
+    .total-hours {
+
+      margin-top: 10px;
+
+      color: #666;
+
+      font-size: 16px;
+
+      font-weight: normal;
+
+    }
+
+
+    .attendance-message {
+
+      margin-top: 14px;
+
+      color: #188038;
+
+      font-size: 14px;
+
+      font-weight: 600;
+
+    }
+
+
+    /* =========================
        EMPLOYEE PHOTO
        ========================= */
 
@@ -414,87 +555,6 @@
 
 
     /* =========================
-       ATTENDANCE RESULT
-       ========================= */
-
-    .attendance-type {
-
-      margin-bottom: 12px;
-
-      color: #188038;
-
-      font-size: 22px;
-
-      font-weight: 900;
-
-      letter-spacing: 1px;
-
-    }
-
-
-    .name {
-
-      margin: 10px 0;
-
-      color: #333;
-
-      font-size: 26px;
-
-      line-height: 1.25;
-
-      font-weight: 800;
-
-    }
-
-
-    .employee-info {
-
-      color: #666;
-
-      font-size: 16px;
-
-      line-height: 1.6;
-
-      font-weight: normal;
-
-    }
-
-
-    .attendance-time {
-
-      display: inline-block;
-
-      margin-top: 15px;
-
-      padding: 10px 20px;
-
-      background: #e8f5e9;
-
-      color: #188038;
-
-      border-radius: 12px;
-
-      font-size: 25px;
-
-      font-weight: 900;
-
-    }
-
-
-    .total-hours {
-
-      margin-top: 10px;
-
-      color: #666;
-
-      font-size: 16px;
-
-      font-weight: normal;
-
-    }
-
-
-    /* =========================
        FOOTER
        ========================= */
 
@@ -522,7 +582,7 @@
 
       color: #f58220;
 
-      font-weight: 700;
+      font-weight: 800;
 
     }
 
@@ -592,6 +652,15 @@
       .attendance-time {
 
         font-size: 22px;
+
+      }
+
+
+      .employee-photo {
+
+        width: 125px;
+
+        height: 125px;
 
       }
 
@@ -1205,7 +1274,7 @@ function showResult(responseText) {
 
 
 /* ============================================================
-   TIME IN
+   TIME IN RESULT
    ============================================================ */
 
 function showTimeIn(data) {
@@ -1221,9 +1290,11 @@ function showTimeIn(data) {
 
   result.innerHTML =
 
+    "<div class='success-icon'>✓</div>" +
+
     "<div class='attendance-type'>" +
 
-    "✅ TIME IN" +
+    "TIME IN" +
 
     "</div>" +
 
@@ -1261,7 +1332,9 @@ function showTimeIn(data) {
     "</div>" +
 
 
-    "<div class='employee-info' style='margin-top:15px;'>" +
+    "<div class='attendance-message'>" +
+
+    "✓ " +
 
     escapeHtml(
       data.message
@@ -1281,7 +1354,7 @@ function showTimeIn(data) {
 
 
 /* ============================================================
-   TIME OUT
+   TIME OUT RESULT
    ============================================================ */
 
 function showTimeOut(data) {
@@ -1297,9 +1370,11 @@ function showTimeOut(data) {
 
   result.innerHTML =
 
+    "<div class='success-icon'>✓</div>" +
+
     "<div class='attendance-type'>" +
 
-    "✅ TIME OUT" +
+    "TIME OUT" +
 
     "</div>" +
 
@@ -1348,7 +1423,9 @@ function showTimeOut(data) {
     "</div>" +
 
 
-    "<div class='employee-info' style='margin-top:15px;'>" +
+    "<div class='attendance-message'>" +
+
+    "✓ " +
 
     escapeHtml(
       data.message
@@ -1599,176 +1676,184 @@ const html5QrCode =
   new Html5Qrcode("reader");
 
 
-Html5Qrcode.getCameras()
+Html5QrCodeCamera();
 
 
-.then(
-
-  function(devices) {
+function Html5QrCodeCamera() {
 
 
-    if (
+  Html5Qrcode.getCameras()
 
-      !devices ||
 
-      !devices.length
+  .then(
 
-    ) {
+    function(devices) {
+
+
+      if (
+
+        !devices ||
+
+        !devices.length
+
+      ) {
+
+
+        document.getElementById(
+          "result"
+        ).className = "wait";
+
+
+        document.getElementById(
+          "result"
+        ).innerHTML =
+          "❌<br>No camera found.";
+
+
+        return;
+
+      }
+
+
+      console.log(
+        "Available cameras:",
+        devices
+      );
+
+
+      /* ======================================================
+         FIND BACK CAMERA
+         ====================================================== */
+
+      let backCamera =
+        devices.find(
+
+          function(device) {
+
+
+            const label =
+              (
+                device.label ||
+                ""
+              ).toLowerCase();
+
+
+            return (
+
+              label.includes("back") ||
+
+              label.includes("rear") ||
+
+              label.includes("environment")
+
+            );
+
+          }
+
+        );
+
+
+      /* ======================================================
+         USE BACK CAMERA
+         ====================================================== */
+
+      if (backCamera) {
+
+
+        console.log(
+          "✅ Back camera selected:",
+          backCamera.label
+        );
+
+
+        html5QrCode.start(
+
+          backCamera.id,
+
+          {
+
+            fps: 10,
+
+            qrbox: 250
+
+          },
+
+          onScanSuccess
+
+        );
+
+      }
+
+
+      else {
+
+
+        console.log(
+          "⚠️ Back camera name unavailable."
+        );
+
+
+        console.log(
+          "Using environment-facing camera."
+        );
+
+
+        html5QrCode.start(
+
+          {
+
+            facingMode: {
+              ideal: "environment"
+            }
+
+          },
+
+          {
+
+            fps: 10,
+
+            qrbox: 250
+
+          },
+
+          onScanSuccess
+
+        );
+
+      }
+
+    }
+
+  )
+
+
+  .catch(
+
+    function(error) {
+
+
+      console.error(
+        "Camera error:",
+        error
+      );
 
 
       document.getElementById(
         "result"
-      ).className = "wait";
+      ).className =
+        "wait";
 
 
       document.getElementById(
         "result"
       ).innerHTML =
-        "❌<br>No camera found.";
-
-
-      return;
+        "❌<br>Camera Error";
 
     }
 
+  );
 
-    console.log(
-      "Available cameras:",
-      devices
-    );
-
-
-    /* ========================================================
-       FIND BACK CAMERA
-       ======================================================== */
-
-    let backCamera =
-      devices.find(
-
-        function(device) {
-
-
-          const label =
-            (
-              device.label ||
-              ""
-            ).toLowerCase();
-
-
-          return (
-
-            label.includes("back") ||
-
-            label.includes("rear") ||
-
-            label.includes("environment")
-
-          );
-
-        }
-
-      );
-
-
-    /* ========================================================
-       USE BACK CAMERA
-       ======================================================== */
-
-    if (backCamera) {
-
-
-      console.log(
-        "✅ Back camera selected:",
-        backCamera.label
-      );
-
-
-      html5QrCode.start(
-
-        backCamera.id,
-
-        {
-
-          fps: 10,
-
-          qrbox: 250
-
-        },
-
-        onScanSuccess
-
-      );
-
-    }
-
-
-    else {
-
-
-      console.log(
-        "⚠️ Back camera name unavailable."
-      );
-
-
-      console.log(
-        "Using environment-facing camera."
-      );
-
-
-      html5QrCode.start(
-
-        {
-
-          facingMode: {
-            ideal: "environment"
-          }
-
-        },
-
-        {
-
-          fps: 10,
-
-          qrbox: 250
-
-        },
-
-        onScanSuccess
-
-      );
-
-    }
-
-  }
-
-)
-
-
-.catch(
-
-  function(error) {
-
-
-    console.error(
-      "Camera error:",
-      error
-    );
-
-
-    document.getElementById(
-      "result"
-    ).className =
-      "wait";
-
-
-    document.getElementById(
-      "result"
-    ).innerHTML =
-      "❌<br>Camera Error";
-
-  }
-
-);
+}
 
 </script>
 
